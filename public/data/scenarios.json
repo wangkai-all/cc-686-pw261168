@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "generatedBy": "scripts/gen_data.py",
+  "rangeUnit": "mm",
+  "scenarios": [
+    {
+      "id": "bimodal",
+      "title": "同均值 · 双峰错位",
+      "tagline": "两批加权均值完全相同，但两个峰沿相反对角线摆放。",
+      "file": "bimodal.csv",
+      "range": {
+        "lengthMin": 95,
+        "lengthMax": 165,
+        "widthMin": 55,
+        "widthMax": 125
+      },
+      "batches": [
+        {
+          "key": "A",
+          "label": "批次 A · 上午班"
+        },
+        {
+          "key": "B",
+          "label": "批次 B · 下午班"
+        }
+      ],
+      "notes": [
+        "A 的两簇位于 (112, 72) 与 (148, 108) mm，沿正对角线排列。",
+        "B 的两簇位于 (112, 108) 与 (148, 72) mm，沿负对角线排列。",
+        "每批两簇质量各为 10，因此两批的加权均值都精确等于 (130, 90) mm。",
+        "两批样本数 44 / 64 不同；归一化后只比较形状，不把数量差当分布差。",
+        "均值差接近 0，但二维分布形状不同，最小搬运代价仍显著大于 0。"
+      ],
+      "checks": {
+        "equalWeightedMeans": true,
+        "expectZeroCost": false
+      }
+    },
+    {
+      "id": "units",
+      "title": "单位混记 · 同一物理分布",
+      "tagline": "B 批以 cm、in 以及 cm/mm 混合单位记录，先换算再比较。",
+      "file": "units.csv",
+      "range": {
+        "lengthMin": 100,
+        "lengthMax": 160,
+        "widthMin": 58,
+        "widthMax": 112
+      },
+      "batches": [
+        {
+          "key": "A",
+          "label": "批次 A · mm 量具"
+        },
+        {
+          "key": "B",
+          "label": "批次 B · 混合量具"
+        }
+      ],
+      "notes": [
+        "A 批全部用 mm；B 批前 32 条用 cm，接下来 8 条长用 cm、宽用 mm，最后 8 条用 in。",
+        "页面按每行单位换算到 mm，再由页面设定的轴比例换算为分析单位。",
+        "若直接比较原始数字，B 的长宽数值会小一个数量级；对齐单位后两批形状接近。"
+      ],
+      "checks": {
+        "expectRawUnitsMismatch": true
+      }
+    },
+    {
+      "id": "offset",
+      "title": "宽度偏移 · 含特殊样本",
+      "tagline": "B 批宽度整体偏移 +8 mm；另含超程、缺测与零权重记录。",
+      "file": "offset.csv",
+      "range": {
+        "lengthMin": 100,
+        "lengthMax": 160,
+        "widthMin": 58,
+        "widthMax": 112
+      },
+      "batches": [
+        {
+          "key": "A",
+          "label": "批次 A · 基准"
+        },
+        {
+          "key": "B",
+          "label": "批次 B · 偏移"
+        }
+      ],
+      "notes": [
+        "两批常规样本的中心约在 (126, 82) 与 (126, 90) mm，宽度方向约 +8 mm。",
+        "OFF-A-045 长度 205 mm、OFF-B-045 宽度 128 mm 超出名义量程；可扩展网格纳入或明确排除。",
+        "OFF-A-046 / OFF-B-046 各缺一个坐标；缺测样本不生成网格位置，不参与运输距离。",
+        "OFF-A-047 权重为 0，作为无效权重单列。",
+        "默认「排除超程」只比较量程内样本，并显示被排除的数量与权重。"
+      ],
+      "checks": {
+        "expectWidthOffsetMm": 8
+      }
+    }
+  ]
+}
